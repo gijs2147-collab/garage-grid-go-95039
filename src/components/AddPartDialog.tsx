@@ -18,10 +18,12 @@ interface AddPartDialogProps {
     make: string;
     model: string;
     imageUrl?: string;
+    projectId?: string;
   }) => void;
+  projects: Array<{ id: string; name: string }>;
 }
 
-const AddPartDialog = ({ onAdd }: AddPartDialogProps) => {
+const AddPartDialog = ({ onAdd, projects }: AddPartDialogProps) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
@@ -32,6 +34,7 @@ const AddPartDialog = ({ onAdd }: AddPartDialogProps) => {
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [projectId, setProjectId] = useState("");
 
   const categories = [
     "Engine",
@@ -82,6 +85,7 @@ const AddPartDialog = ({ onAdd }: AddPartDialogProps) => {
       make,
       model,
       imageUrl: imageUrl || undefined,
+      projectId: projectId || undefined,
     });
 
     // Reset form
@@ -94,6 +98,7 @@ const AddPartDialog = ({ onAdd }: AddPartDialogProps) => {
     setMake("");
     setModel("");
     setImageUrl("");
+    setProjectId("");
     setOpen(false);
     
     toast.success("Part added successfully!");
@@ -206,6 +211,23 @@ const AddPartDialog = ({ onAdd }: AddPartDialogProps) => {
               onChange={(e) => setLocation(e.target.value)}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="project">Allocate to Project</Label>
+            <Select value={projectId} onValueChange={setProjectId}>
+              <SelectTrigger id="project">
+                <SelectValue placeholder="Select project (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No project</SelectItem>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

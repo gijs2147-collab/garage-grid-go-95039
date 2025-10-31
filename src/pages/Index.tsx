@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
-import { Search, Package, LayoutGrid, List, LayoutList, Trash2 } from "lucide-react";
+import { Search, Package, LayoutGrid, List, LayoutList, Trash2, FolderOpen } from "lucide-react";
 import PartCard from "@/components/PartCard";
 import AddPartDialog from "@/components/AddPartDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -19,9 +20,18 @@ interface Part {
   make: string;
   model: string;
   imageUrl?: string;
+  projectId?: string;
 }
 
 const Index = () => {
+  const navigate = useNavigate();
+  
+  const [projects] = useState([
+    { id: "1", name: "2024 BMW M3 Restoration" },
+    { id: "2", name: "Honda Civic Track Build" },
+    { id: "3", name: "Ford F-150 Custom" },
+  ]);
+  
   const [parts, setParts] = useState<Part[]>([
     {
       id: "1",
@@ -109,7 +119,18 @@ const Index = () => {
                 </p>
               </div>
             </div>
-            <AddPartDialog onAdd={handleAddPart} />
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => navigate("/projects")}
+                className="gap-2"
+              >
+                <FolderOpen className="w-5 h-5" />
+                Projects
+              </Button>
+              <AddPartDialog onAdd={handleAddPart} projects={projects} />
+            </div>
           </div>
         </div>
       </header>
