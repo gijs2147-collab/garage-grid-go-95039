@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, Package } from "lucide-react";
+import { Search, Package, LayoutGrid, List, LayoutList } from "lucide-react";
 import PartCard from "@/components/PartCard";
 import AddPartDialog from "@/components/AddPartDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Part {
   id: string;
@@ -59,6 +62,7 @@ const Index = () => {
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "feed">("grid");
 
   const categories = ["all", ...Array.from(new Set(parts.map((part) => part.category)))];
 
@@ -108,15 +112,44 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 space-y-6">
-        {/* Search Bar */}
-        <div className="relative max-w-xl">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, SKU, location, category, make, or model..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+        {/* Search Bar and View Toggle */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="relative flex-1 max-w-xl">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="Search by name, SKU, location, category, make, or model..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              variant={viewMode === "grid" ? "default" : "outline"}
+              size="icon"
+              onClick={() => setViewMode("grid")}
+              title="Grid View"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "default" : "outline"}
+              size="icon"
+              onClick={() => setViewMode("list")}
+              title="List View"
+            >
+              <List className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "feed" ? "default" : "outline"}
+              size="icon"
+              onClick={() => setViewMode("feed")}
+              title="Feed View"
+            >
+              <LayoutList className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Category Tabs */}
@@ -131,13 +164,105 @@ const Index = () => {
 
           {categories.map((category) => (
             <TabsContent key={category} value={category}>
-              {/* Parts Grid */}
+              {/* Parts Display */}
               {filteredParts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredParts.map((part) => (
-                    <PartCard key={part.id} {...part} />
-                  ))}
-                </div>
+                <>
+                  {/* Grid View */}
+                  {viewMode === "grid" && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {filteredParts.map((part) => (
+                        <PartCard key={part.id} {...part} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* List View */}
+                  {viewMode === "list" && (
+                    <div className="space-y-2">
+                      {filteredParts.map((part) => (
+                        <Card key={part.id} className="p-4 hover:shadow-md transition-shadow">
+                          <div className="flex items-center gap-4">
+                            {part.imageUrl && (
+                              <img
+                                src={part.imageUrl}
+                                alt={part.name}
+                                className="w-16 h-16 rounded object-cover"
+                              />
+                            )}
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-6 gap-2 sm:gap-4 items-center">
+                              <div className="sm:col-span-2">
+                                <h3 className="font-semibold">{part.name}</h3>
+                                <p className="text-sm text-muted-foreground">{part.sku}</p>
+                              </div>
+                              <div className="text-sm">
+                                <span className="text-muted-foreground">Location: </span>
+                                {part.location}
+                              </div>
+                              <div className="text-sm">
+                                <Badge variant="secondary">{part.category}</Badge>
+                              </div>
+                              <div className="text-sm">
+                                <span className="text-muted-foreground">Qty: </span>
+                                <span className="font-semibold">{part.quantity}</span>
+                              </div>
+                              <div className="text-sm">
+                                {part.make} {part.model}
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Feed View */}
+                  {viewMode === "feed" && (
+                    <div className="max-w-3xl mx-auto space-y-6">
+                      {filteredParts.map((part) => (
+                        <Card key={part.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                          {part.imageUrl && (
+                            <div className="w-full h-64 overflow-hidden">
+                              <img
+                                src={part.imageUrl}
+                                alt={part.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="p-6 space-y-4">
+                            <div>
+                              <h3 className="text-2xl font-bold mb-2">{part.name}</h3>
+                              <div className="flex gap-2 flex-wrap">
+                                <Badge>{part.category}</Badge>
+                                <Badge variant="outline">{part.condition}</Badge>
+                                <Badge variant="secondary">SKU: {part.sku}</Badge>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="text-muted-foreground block">Location</span>
+                                <span className="font-medium">{part.location}</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground block">Quantity</span>
+                                <span className="font-medium">{part.quantity} in stock</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground block">Make</span>
+                                <span className="font-medium">{part.make}</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground block">Model</span>
+                                <span className="font-medium">{part.model}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="text-center py-12">
                   <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
