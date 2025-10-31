@@ -1,8 +1,22 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Package, Tag, Car } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { MapPin, Package, Tag, Car, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface PartCardProps {
+  id: string;
   name: string;
   sku?: string;
   location: string;
@@ -12,9 +26,14 @@ interface PartCardProps {
   make: string;
   model: string;
   imageUrl?: string;
+  onDelete: (id: string) => void;
 }
 
-const PartCard = ({ name, sku, location, quantity, condition, category, make, model, imageUrl }: PartCardProps) => {
+const PartCard = ({ id, name, sku, location, quantity, condition, category, make, model, imageUrl, onDelete }: PartCardProps) => {
+  const handleDelete = () => {
+    onDelete(id);
+    toast.success("Part deleted successfully");
+  };
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="aspect-square bg-muted relative overflow-hidden">
@@ -58,6 +77,30 @@ const PartCard = ({ name, sku, location, quantity, condition, category, make, mo
               {condition}
             </Badge>
           </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                className="w-full mt-3"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Part
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete "{name}" from your inventory. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </CardContent>
     </Card>

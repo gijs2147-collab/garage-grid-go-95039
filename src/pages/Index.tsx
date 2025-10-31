@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, Package, LayoutGrid, List, LayoutList } from "lucide-react";
+import { Search, Package, LayoutGrid, List, LayoutList, Trash2 } from "lucide-react";
 import PartCard from "@/components/PartCard";
 import AddPartDialog from "@/components/AddPartDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -88,6 +88,10 @@ const Index = () => {
     setParts([part, ...parts]);
   };
 
+  const handleDeletePart = (id: string) => {
+    setParts(parts.filter((part) => part.id !== id));
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -171,7 +175,7 @@ const Index = () => {
                   {viewMode === "grid" && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {filteredParts.map((part) => (
-                        <PartCard key={part.id} {...part} />
+                        <PartCard key={part.id} {...part} onDelete={handleDeletePart} />
                       ))}
                     </div>
                   )}
@@ -209,6 +213,14 @@ const Index = () => {
                                 {part.make} {part.model}
                               </div>
                             </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeletePart(part.id)}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           </div>
                         </Card>
                       ))}
@@ -257,6 +269,15 @@ const Index = () => {
                                 <span className="font-medium">{part.model}</span>
                               </div>
                             </div>
+
+                            <Button
+                              variant="destructive"
+                              onClick={() => handleDeletePart(part.id)}
+                              className="w-full"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete Part
+                            </Button>
                           </div>
                         </Card>
                       ))}
