@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 interface Part {
   id: string;
   name: string;
-  sku: string;
+  sku?: string;
   location: string;
   quantity: number;
   condition: string;
@@ -69,7 +69,7 @@ const Index = () => {
   const filteredParts = parts.filter((part) => {
     const matchesSearch =
       part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      part.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (part.sku && part.sku.toLowerCase().includes(searchQuery.toLowerCase())) ||
       part.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       part.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       part.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -192,7 +192,7 @@ const Index = () => {
                             <div className="flex-1 grid grid-cols-1 sm:grid-cols-6 gap-2 sm:gap-4 items-center">
                               <div className="sm:col-span-2">
                                 <h3 className="font-semibold">{part.name}</h3>
-                                <p className="text-sm text-muted-foreground">{part.sku}</p>
+                                {part.sku && <p className="text-sm text-muted-foreground">{part.sku}</p>}
                               </div>
                               <div className="text-sm">
                                 <span className="text-muted-foreground">Location: </span>
@@ -235,7 +235,7 @@ const Index = () => {
                               <div className="flex gap-2 flex-wrap">
                                 <Badge>{part.category}</Badge>
                                 <Badge variant="outline">{part.condition}</Badge>
-                                <Badge variant="secondary">SKU: {part.sku}</Badge>
+                                {part.sku && <Badge variant="secondary">SKU: {part.sku}</Badge>}
                               </div>
                             </div>
                             

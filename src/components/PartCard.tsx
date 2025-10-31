@@ -4,7 +4,7 @@ import { MapPin, Package, Tag, Car } from "lucide-react";
 
 interface PartCardProps {
   name: string;
-  sku: string;
+  sku?: string;
   location: string;
   quantity: number;
   condition: string;
@@ -39,7 +39,7 @@ const PartCard = ({ name, sku, location, quantity, condition, category, make, mo
         <div className="space-y-2">
           <div>
             <h3 className="font-semibold text-lg line-clamp-1">{name}</h3>
-            <p className="text-sm text-muted-foreground">SKU: {sku}</p>
+            {sku && <p className="text-sm text-muted-foreground">SKU: {sku}</p>}
           </div>
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="w-4 h-4 text-accent" />

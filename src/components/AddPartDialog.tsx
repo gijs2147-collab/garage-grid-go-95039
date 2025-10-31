@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface AddPartDialogProps {
   onAdd: (part: {
     name: string;
-    sku: string;
+    sku?: string;
     location: string;
     quantity: number;
     condition: string;
@@ -67,14 +67,14 @@ const AddPartDialog = ({ onAdd }: AddPartDialogProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !sku || !location || !category || !make || !model) {
+    if (!name || !location || !category || !make || !model) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     onAdd({
       name,
-      sku,
+      sku: sku || undefined,
       location,
       quantity: parseInt(quantity),
       condition,
@@ -143,13 +143,12 @@ const AddPartDialog = ({ onAdd }: AddPartDialogProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sku">SKU / Part Number *</Label>
+            <Label htmlFor="sku">SKU / Part Number</Label>
             <Input
               id="sku"
-              placeholder="e.g., BP-F-001"
+              placeholder="e.g., BP-F-001 (optional)"
               value={sku}
               onChange={(e) => setSku(e.target.value)}
-              required
             />
           </div>
 
