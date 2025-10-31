@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Package } from "lucide-react";
 import PartCard from "@/components/PartCard";
 import AddPartDialog from "@/components/AddPartDialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface Part {
   id: string;
@@ -57,16 +58,23 @@ const Index = () => {
   ]);
   
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const filteredParts = parts.filter(
-    (part) =>
+  const categories = ["all", ...Array.from(new Set(parts.map((part) => part.category)))];
+
+  const filteredParts = parts.filter((part) => {
+    const matchesSearch =
       part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       part.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
       part.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       part.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       part.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      part.model.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      part.model.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = selectedCategory === "all" || part.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
 
   const handleAddPart = (newPart: Omit<Part, "id">) => {
     const part: Part = {
@@ -111,24 +119,39 @@ const Index = () => {
           />
         </div>
 
-        {/* Parts Grid */}
-        {filteredParts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredParts.map((part) => (
-              <PartCard key={part.id} {...part} />
+        {/* Category Tabs */}
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+          <TabsList>
+            {categories.map((category) => (
+              <TabsTrigger key={category} value={category} className="capitalize">
+                {category}
+              </TabsTrigger>
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No parts found</h3>
-            <p className="text-muted-foreground">
-              {searchQuery
-                ? "Try adjusting your search"
-                : "Add your first part to get started"}
-            </p>
-          </div>
-        )}
+          </TabsList>
+
+          {categories.map((category) => (
+            <TabsContent key={category} value={category}>
+              {/* Parts Grid */}
+              {filteredParts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredParts.map((part) => (
+                    <PartCard key={part.id} {...part} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No parts found</h3>
+                  <p className="text-muted-foreground">
+                    {searchQuery
+                      ? "Try adjusting your search"
+                      : "Add your first part to get started"}
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
       </main>
     </div>
   );
