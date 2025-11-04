@@ -217,10 +217,9 @@ const AddPartDialog = ({ onAdd, projects }: AddPartDialogProps) => {
             <Label htmlFor="project">Allocate to Project</Label>
             <Select value={projectId} onValueChange={setProjectId}>
               <SelectTrigger id="project">
-                <SelectValue placeholder="Select project (optional)" />
+                <SelectValue placeholder="No project (optional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No project</SelectItem>
                 {projects.map((project) => (
                   <SelectItem key={project.id} value={project.id}>
                     {project.name}
